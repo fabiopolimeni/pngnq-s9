@@ -156,6 +156,11 @@
 #include <math.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#include <malloc.h>  // _alloca
+#define alloca _alloca
+#endif
+
 /*
  * Utility macros
  */
@@ -877,7 +882,7 @@ nq_colour_vector externalise(nq_colour_vector internal_pix) {
 void getcolormap(unsigned char *map) {
 
     unsigned int j;
-    nq_colour_vector externalised[netsize];
+    nq_colour_vector *externalised = (nq_colour_vector*)alloca(netsize * sizeof(nq_colour_vector));
 
     /* Externalise each neuron's colour, and save a copy for recalibration. */
     for(j = 0; j < netsize; j++) {
@@ -900,15 +905,14 @@ void getcolormap(unsigned char *map) {
     for(j = 0; j < netsize; j++) {
         network[j] = internaliseLearningPixel(externalised[j].elems[red], externalised[j].elems[green],
                                               externalised[j].elems[blue], externalised[j].elems[alpha]);
-    }
-        
+    }       
 }
 
 void getcolormap_strict(unsigned char *map, unsigned char *user_palette_data, int user_palette_size) {
 
     unsigned int j;
-    nq_colour_vector externalised[netsize];
     
+    nq_colour_vector *externalised = (nq_colour_vector*)alloca(netsize * sizeof(nq_colour_vector));
 
     /* First, just copy over the user-supplied colours. */
     for(j = 0; j < user_palette_size; j++) {
@@ -1067,9 +1071,12 @@ unsigned int inxsearch( int al, int b, int g, int r)
     nq_colour_vector intermediate;
     intermediate = internaliseLearningPixel(r,g,b,al); 
 
-    /* Precompute difference between target colour and every colour in the network, as well as that difference squared. */
-    nq_colour_vector diffs[netsize];
-    float dists[netsize];
+    /* Precompute difference between target colour and every colour in the
+    network, as well as that difference squared. */
+    
+    nq_colour_vector *diffs = (nq_colour_vector*)alloca(netsize * sizeof(nq_colour_vector));
+    float *dists = (float*)alloca(netsize * sizeof(float));
+    
     nq_colour_vector context_weighting = calc_context_weighting(intermediate);
 
     int vdx;
@@ -1160,7 +1167,7 @@ int contest(nq_colour_vector target_pix)
     /* Calculate the component-wise differences between target_pix colour and every colour in the network, and weight according
      * to component relevance.
      */
-    nq_colour_vector diffs[netsize];
+    nq_colour_vector *diffs = (nq_colour_vector*)alloca(netsize * sizeof(nq_colour_vector));
     nq_colour_vector context_weighting = calc_context_weighting(target_pix);
 
     int vdx;
@@ -1279,7 +1286,7 @@ void repelcoincident(int i) {
         return;
     }
 
-    nq_colour_vector diffs[netsize];
+    nq_colour_vector *diffs = (nq_colour_vector*)alloca(netsize * sizeof(nq_colour_vector));
     nq_colour_vector context_weighting = calc_context_weighting(network[i]);
 
     int vdx;

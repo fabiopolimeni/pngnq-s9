@@ -133,7 +133,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h> /* isprint() and features.h */
-#include <getopt.h>
+#include "ya_getopt.h"
 
 #if HAVE_VALGRIND_H
 # include <valgrind.h>

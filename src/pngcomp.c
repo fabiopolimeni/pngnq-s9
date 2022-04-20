@@ -22,7 +22,7 @@ The error is calculated as the linear distance between two colors in RGBA space.
 ** implied warranty.
 */
 
-
+#define VERSION "0.0.2"
 
 #define PNGCOMP_USAGE "usage: pngcomp [-vVh] image1.png image2.png\n\
   options: v - verbose, does nothing as yet.\n\
@@ -51,18 +51,14 @@ The error is calculated as the linear distance between two colors in RGBA space.
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include "png.h"
-#include "config.h"
+//#include "config.h"
 #include "rwpng.h"
 #include "colorspace.h" 
 
-#if HAVE_GETOPT 
-  #include <unistd.h>
-#else
-  #include "../freegetopt/getopt.h"
-#endif
+#include "ya_getopt.h"
 
 typedef struct {
   uch r, g, b, a;
